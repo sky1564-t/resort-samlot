@@ -1,7 +1,5 @@
 <template>
-  <LayoutComponent />
+  <NuxtLayout name="default">
+    <NuxtPage />
+  </NuxtLayout>
 </template>
-
-<script setup>
-import LayoutComponent from '@/components/layouts/LayoutComponent.vue';
-</script>
