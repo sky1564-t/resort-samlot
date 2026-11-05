@@ -1,54 +1,8 @@
 <script setup lang="ts">
 useHead({ title: 'Book Your Stay – Samlot Diamond Resort' })
 
-const roomTypes = [
-  { name: 'Forest Villa', price: 120 },
-  { name: 'Mountain Suite', price: 160 },
-  { name: 'Garden Room', price: 80 },
-]
-
-const form = reactive({
-  room: roomTypes[0]?.name ?? '',
-  checkIn: '',
-  checkOut: '',
-  adults: 2,
-  children: 0,
-  name: '',
-  email: '',
-  phone: '',
-  notes: '',
-})
-
-const errors = reactive<Record<string, string>>({})
-const status = ref<'idle' | 'sending' | 'sent' | 'error'>('idle')
-const today = new Date().toISOString().slice(0, 10)
-
-const nights = computed(() => {
-  if (!form.checkIn || !form.checkOut) return 0
-  const diff = (new Date(form.checkOut).getTime() - new Date(form.checkIn).getTime()) / 86400000
-  return diff > 0 ? Math.round(diff) : 0
-})
-const rate = computed(() => roomTypes.find(r => r.name === form.room)?.price ?? 0)
-const total = computed(() => nights.value * rate.value)
-
-function validate() {
-  errors.checkIn = form.checkIn ? '' : 'Choose a check-in date.'
-  errors.checkOut = nights.value > 0 ? '' : 'Check-out must be after check-in.'
-  errors.name = form.name.trim() ? '' : 'Enter your full name.'
-  errors.email = /^\S+@\S+\.\S+$/.test(form.email) ? '' : 'Enter a valid email address.'
-  return !Object.values(errors).some(Boolean)
-}
-
-async function submit() {
-  if (!validate()) return
-  status.value = 'sending'
-  try {
-    await $fetch('/api/booking', { method: 'POST', body: { ...form, nights: nights.value, total: total.value } })
-    status.value = 'sent'
-  } catch {
-    status.value = 'error'
-  }
-}
+// All booking logic lives in composables/useBooking.ts
+const { form, rooms, errors, status, serverError, available, today, nights, rate, total, submit } = useBooking()
 
 const field =
   'w-full rounded border bg-white px-3 py-2.5 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-400 focus:border-[#a8895b] dark:bg-neutral-900 dark:text-neutral-100'
@@ -81,9 +35,11 @@ const ok = 'border-neutral-200 dark:border-neutral-800'
           <div class="grid gap-5">
             <div>
               <label for="room" class="mb-1.5 block text-sm font-medium">Room</label>
-              <select id="room" v-model="form.room" :class="[field, ok]">
-                <option v-for="r in roomTypes" :key="r.name" :value="r.name">{{ r.name }} · ${{ r.price }} / night</option>
+              <select id="room" v-model="form.room" :class="[field, errors.room ? 'border-red-500' : ok]">
+                <option v-if="!rooms?.length" value="" disabled>No rooms available right now</option>
+                <option v-for="r in rooms" :key="r.id" :value="r.name">{{ r.name }} · ${{ Number(r.price_per_night) }} / night · sleeps {{ r.capacity }}</option>
               </select>
+              <p v-if="errors.room" class="mt-1 text-xs text-red-600">{{ errors.room }}</p>
             </div>
 
             <div class="grid gap-4 sm:grid-cols-2">
@@ -102,7 +58,8 @@ const ok = 'border-neutral-200 dark:border-neutral-800'
             <div class="grid gap-4 sm:grid-cols-2">
               <div>
                 <label for="adults" class="mb-1.5 block text-sm font-medium">Adults</label>
-                <input id="adults" v-model.number="form.adults" type="number" min="1" max="10" :class="[field, ok]" />
+                <input id="adults" v-model.number="form.adults" type="number" min="1" max="10" :class="[field, errors.adults ? 'border-red-500' : ok]" />
+                <p v-if="errors.adults" class="mt-1 text-xs text-red-600">{{ errors.adults }}</p>
               </div>
               <div>
                 <label for="children" class="mb-1.5 block text-sm font-medium">Children</label>
@@ -138,7 +95,7 @@ const ok = 'border-neutral-200 dark:border-neutral-800'
           <aside class="self-start rounded bg-neutral-100 p-6 dark:bg-neutral-900">
             <h2 class="font-serif text-2xl">Your stay</h2>
             <dl class="mt-4 space-y-2 text-sm">
-              <div class="flex justify-between"><dt class="text-neutral-500">Room</dt><dd>{{ form.room }}</dd></div>
+              <div class="flex justify-between"><dt class="text-neutral-500">Room</dt><dd>{{ form.room || '–' }}</dd></div>
               <div class="flex justify-between"><dt class="text-neutral-500">Rate</dt><dd>${{ rate }} / night</dd></div>
               <div class="flex justify-between"><dt class="text-neutral-500">Nights</dt><dd>{{ nights || '–' }}</dd></div>
               <div class="flex justify-between"><dt class="text-neutral-500">Guests</dt><dd>{{ form.adults }} adults, {{ form.children }} children</dd></div>
@@ -147,7 +104,9 @@ const ok = 'border-neutral-200 dark:border-neutral-800'
               <span class="text-sm text-neutral-500">Estimated total</span>
               <span class="font-serif text-3xl text-[#a8895b]">{{ nights ? `$${total}` : '–' }}</span>
             </div>
-            <p v-if="status === 'error'" class="mt-4 text-sm text-red-600" role="alert">We couldn’t send your request. Check your connection and try again.</p>
+            <p v-if="available === true" class="mt-4 text-sm text-green-700 dark:text-green-500">These dates are available.</p>
+            <p v-else-if="available === false" class="mt-4 text-sm text-red-600">These dates are not available for this room.</p>
+            <p v-if="status === 'error'" class="mt-4 text-sm text-red-600" role="alert">{{ serverError || 'Please check the highlighted fields and try again.' }}</p>
             <button
               type="submit"
               :disabled="status === 'sending'"

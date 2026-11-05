@@ -1,5 +1,10 @@
+<script setup>
+const route = useRoute()
+const isDashboard = computed(() => route.path.startsWith('/dashboard'))
+</script>
+
 <template>
-  <NuxtLayout>
-    <NuxtPage />
-  </NuxtLayout>
+  <NavBarComponent v-if="!isDashboard" />
+  <NuxtPage />
+  <FooterComponent v-if="!isDashboard" />
 </template>
