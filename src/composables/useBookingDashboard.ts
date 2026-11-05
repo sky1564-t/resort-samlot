@@ -1,12 +1,7 @@
 
 // frontend/src/composables/useBookingDashboard.ts
-
-export type BookingStatus =
-  | 'pending'
-  | 'confirmed'
-  | 'checked_in'
-  | 'completed'
-  | 'cancelled'
+import type { BookingStatus } from '@/types/booking'
+export type { BookingStatus }
 
 export interface DashboardBooking {
   id: number

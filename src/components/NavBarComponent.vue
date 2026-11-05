@@ -108,7 +108,7 @@ const links = [
   { path: '/', label: 'Home' },
   { path: '/rooms', label: 'Rooms' },
   { path: '/blog', label: 'Blog', dropdown: true },
-  { path: '/pages', label: 'Pages', dropdown: true },
+  
   { path: '/contact', label: 'Contact' },
   { path: '/about', label: 'About' }
 ]

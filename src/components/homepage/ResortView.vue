@@ -35,7 +35,7 @@
 
       <!-- Asymmetrical Image Collage (Shifted Right) -->
       <div class="w-full md:w-3/4 ml-auto mt-12 md:-mt-10 relative">
-        <div class="grid grid-cols-3 gap-2 md:gap-4 items-end relative z-10">
+        <div class="grid grid-cols-3 gap-2 md:gap-4 items-end relative z-10 mt-12">
           
           <!-- Image 1: Tall Vertical -->
           <div class="relative aspect-[3/4] overflow-hidden rounded-sm">
@@ -76,7 +76,7 @@
       <div class="grid grid-cols-1 md:grid-cols-2 gap-12 lg:gap-24 items-center">
         
         <!-- Left: Split Image Grid -->
-        <div class="grid grid-cols-2 gap-4">
+        <div class="grid grid-cols-2 gap-4 mt-12">
           <div class="relative aspect-[3/5] overflow-hidden rounded-sm">
             <img :src="images.day.bottom1" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000" :class="isNight ? 'opacity-0' : 'opacity-100'" alt="Day Detail" />
             <img :src="images.night.bottom1" class="absolute inset-0 w-full h-full object-cover transition-opacity duration-1000" :class="isNight ? 'opacity-100' : 'opacity-0'" alt="Night Detail" />
@@ -114,7 +114,7 @@ export default {
       images: {
         // You will replace these with actual Chamnab Resort image paths
         day: {
-          collage1: "/picture/16.jpg",      
+          collage1: "/picture/31.jpg",      
           collage2: "/picture/18.jpg",    
           collage3: "/picture/19.jpg",    
           bottom1: "/picture/21.jpg",      
@@ -125,7 +125,7 @@ export default {
           collage2: "/picture/12.jpg", 
           collage3: "/picture/13.jpg", 
           bottom1: "/picture/14.jpg",   
-          bottom2: "/picture/15.jpg",   
+          bottom2: "/picture/35.jpg",   
         }
       }
     };

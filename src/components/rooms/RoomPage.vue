@@ -102,7 +102,7 @@
               <div class="flex items-center justify-between border-t border-neutral-100 pt-4 mt-4">
                 <div>
                   <span class="text-xs text-neutral-500">From</span>
-                  <span class="text-lg font-bold text-[#4e733c] ml-1">$119</span><span class="text-xs text-neutral-500"> /night</span>
+                  <span class="text-lg font-bold text-[#4e733c] ml-1">$10</span><span class="text-xs text-neutral-500"> /night</span>
                 </div>
                 <button class="bg-[#ebd8b7] text-[#4e733c] hover:bg-[#4e733c] hover:text-white h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm transition duration-300">
                   +
@@ -124,7 +124,7 @@
               <div class="flex items-center justify-between border-t border-neutral-100 pt-4 mt-4">
                 <div>
                   <span class="text-xs text-neutral-500">From</span>
-                  <span class="text-lg font-bold text-[#4e733c] ml-1">$189</span><span class="text-xs text-neutral-500"> /night</span>
+                  <span class="text-lg font-bold text-[#4e733c] ml-1">$10</span><span class="text-xs text-neutral-500"> /night</span>
                 </div>
                 <button class="bg-[#ebd8b7] text-[#4e733c] hover:bg-[#4e733c] hover:text-white h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm transition duration-300">
                   +
@@ -146,7 +146,7 @@
               <div class="flex items-center justify-between border-t border-neutral-100 pt-4 mt-4">
                 <div>
                   <span class="text-xs text-neutral-500">From</span>
-                  <span class="text-lg font-bold text-[#4e733c] ml-1">$349</span><span class="text-xs text-neutral-500"> /night</span>
+                  <span class="text-lg font-bold text-[#4e733c] ml-1">$10</span><span class="text-xs text-neutral-500"> /night</span>
                 </div>
                 <button class="bg-[#ebd8b7] text-[#4e733c] hover:bg-[#4e733c] hover:text-white h-8 w-8 rounded-full flex items-center justify-center font-bold text-sm transition duration-300">
                   +

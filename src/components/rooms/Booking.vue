@@ -13,7 +13,7 @@ const ok = 'border-neutral-200 dark:border-neutral-800'
   <div class="bg-[#c9bcae] dark:bg-black">
     <!-- Hero bar -->
     <section class="relative h-[45vh] min-h-[360px] w-full overflow-hidden">
-      <img src="/picture/2.jpg" alt="Samlot Diamond Resort" class="hero-image fade absolute inset-0 h-full w-full object-cover" />
+      <img src="/picture/34.jpg" alt="Samlot Diamond Resort" class="hero-image fade absolute inset-0 h-full w-full object-cover" />
       <div class="absolute inset-0 bg-black/45" />
       <div class="relative flex h-full flex-col items-center justify-center px-4 text-center text-white">
         <h1 class="font-serif text-4xl md:text-6xl">Book Your Stay</h1>

@@ -32,7 +32,9 @@
           <p class="text-gray-200 text-xs md:text-sm mb-5 line-clamp-2 drop-shadow leading-relaxed">
             Suite twin forest view with public infinity pool is featured with twin bedroom, daybed, bathroom with bathtub and balcony flow to the forest.
           </p>
-          <button class="px-6 py-2 border border-white/60 text-white text-sm rounded-full hover:bg-white hover:text-black transition duration-300">
+          <button class="px-6 py-2 border border-white/60 text-white text-sm rounded-full hover:bg-white hover:text-black transition duration-300"
+          @click="$router.push('/booking')"
+          >
             Book now
           </button>
         </div>

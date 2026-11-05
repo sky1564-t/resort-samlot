@@ -27,7 +27,7 @@ const facts = [
     <!-- Hero -->
     <section class="relative h-[60vh] min-h-[420px] w-full overflow-hidden">
       <img
-        src="/picture/2.jpg"
+        src="/picture/43.jpg"
         alt="Samlot Diamond Resort among forest and mountains"
         class="hero-image fade absolute inset-0 h-full w-full object-cover"
       />
