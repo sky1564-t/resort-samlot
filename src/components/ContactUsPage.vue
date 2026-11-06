@@ -1,44 +1,12 @@
 <script setup lang="ts">
+import { useContact } from '~/composables/useContact'
+
 useHead({ title: 'Contact – Samlot Diamond Resort' })
 
-const inquiryTypes = ['Room reservation', 'Event or wedding', 'Group or retreat', 'Other question']
+// Fetch logic and state from the composable
+const { form, errors, status, inquiryTypes, isReservation, submitContact } = useContact()
 
-const form = reactive({
-  name: '',
-  phone: '',
-  email: '',
-  checkIn: '',
-  checkOut: '',
-  inquiry: inquiryTypes[0],
-  message: '',
-  agree: false,
-})
-
-const errors = reactive<Record<string, string>>({})
-const status = ref<'idle' | 'sending' | 'sent' | 'error'>('idle')
-
-const isReservation = computed(() => form.inquiry === 'Room reservation')
-
-function validate() {
-  errors.name = form.name.trim() ? '' : 'Enter your full name.'
-  errors.phone = form.phone.trim() ? '' : 'Enter your phone number.'
-  errors.email = /^\S+@\S+\.\S+$/.test(form.email) ? '' : 'Enter a valid email address.'
-  errors.agree = form.agree ? '' : 'Please accept the Privacy Policy.'
-  return !Object.values(errors).some(Boolean)
-}
-
-async function submit() {
-  if (!validate()) return
-  status.value = 'sending'
-  try {
-    // Replace with your own endpoint: server/api/contact.post.ts
-    await $fetch('/api/contact', { method: 'POST', body: { ...form } })
-    status.value = 'sent'
-  } catch {
-    status.value = 'error'
-  }
-}
-
+// Shared classes for form inputs
 const label = 'mb-2 block text-[13px] text-neutral-600 dark:text-neutral-400'
 const input =
   'w-full rounded-xl border border-transparent bg-[#f1efeb] px-4 py-3.5 text-sm text-neutral-900 outline-none transition-colors placeholder:text-neutral-500 focus:border-neutral-900 dark:bg-neutral-800 dark:text-neutral-100 dark:placeholder:text-neutral-500 dark:focus:border-neutral-100'
@@ -51,7 +19,7 @@ const input =
     <div class="mx-auto w-full max-w-8xl px-5 py-12 sm:px-8 md:py-16">
       <!-- Top: intro + form -->
       <div class="grid gap-10 md:grid-cols-2 md:gap-16 mt-20">
-        <!-- Left -->
+        <!-- Left: Contact Info -->
         <section class="flex flex-col justify-between gap-12">
           <div>
             <span
@@ -112,11 +80,11 @@ const input =
 
         <!-- Right: form card -->
         <form
-          class="self-start rounded-xl bg-white/70 backdrop-blur-md p-5 sm:p-6 "
+          class="self-start rounded-xl bg-white/70 backdrop-blur-md p-5 sm:p-6"
           novalidate
-          @submit.prevent="submit"
+          @submit.prevent="submitContact"
         >
-          <div v-if="status === 'sent'" class="py-20 text-center" role="status">
+          <div v-if="status === 'success'" class="py-20 text-center" role="status">
             <div class="mx-auto grid h-12 w-12 place-items-center rounded-xl bg-[#e6e3dd] dark:bg-neutral-800">
               <svg class="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m5 12 5 5 9-10" /></svg>
             </div>
@@ -155,14 +123,17 @@ const input =
               </div>
             </div>
 
+            <!-- Optional Date Fields for Reservations -->
             <div v-if="isReservation" class="grid gap-4 sm:grid-cols-2">
               <div>
                 <label for="checkIn" :class="label">Check-in</label>
-                <input id="checkIn" v-model="form.checkIn" type="date" :class="input" />
+                <input id="checkIn" v-model="form.checkIn" type="date" :class="[input, errors.checkIn && '!border-red-500']" />
+                <p v-if="errors.checkIn" class="mt-1.5 px-4 text-xs text-red-600">{{ errors.checkIn }}</p>
               </div>
               <div>
                 <label for="checkOut" :class="label">Check-out</label>
-                <input id="checkOut" v-model="form.checkOut" type="date" :min="form.checkIn" :class="input" />
+                <input id="checkOut" v-model="form.checkOut" type="date" :min="form.checkIn" :class="[input, errors.checkOut && '!border-red-500']" />
+                <p v-if="errors.checkOut" class="mt-1.5 px-4 text-xs text-red-600">{{ errors.checkOut }}</p>
               </div>
             </div>
 
@@ -177,8 +148,9 @@ const input =
               />
             </div>
 
+            <!-- Backend Error Rendering -->
             <p v-if="status === 'error'" class="text-sm text-red-600" role="alert">
-              We couldn’t send your message. Check your connection and try again.
+              {{ errors.backend || "We couldn’t send your message. Check your connection and try again." }}
             </p>
 
             <button

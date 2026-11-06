@@ -5,7 +5,7 @@
     <header class="relative w-full h-[70vh] md:h-[85vh] overflow-hidden bg-slate-900 flex flex-col justify-end">
       <!-- High-resolution mountain background -->
       <img 
-        src="/picture/1.jpg" 
+        src="/picture/38.jpg" 
         alt="Breathtaking sunset views of Samlot Diamond Resort" 
         class="absolute inset-0 w-full h-full object-cover opacity-80 zoom-fade-effect"
       />

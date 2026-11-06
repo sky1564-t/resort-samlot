@@ -23,7 +23,7 @@ const facts = [
 </script>
 
 <template>
-  <div class="bg-white text-neutral-900 dark:bg-neutral-950 dark:text-neutral-100">
+  <div class="bg-white text-black  ">
     <!-- Hero -->
     <section class="relative h-[60vh] min-h-[420px] w-full overflow-hidden">
       <img
@@ -96,9 +96,9 @@ const facts = [
     </section>
 
     <!-- CTA -->
-    <section class="bg-[#151a18] px-5 py-16 text-center text-white">
+    <section class="bg-slate-100 px-5 py-16 text-center text-black">
       <h2 class="font-serif text-3xl md:text-4xl">Ready to plan your stay?</h2>
-      <p class="mx-auto mt-3 max-w-md text-white/70">Tell us your dates and we will reply with available rooms.</p>
+      <p class="mx-auto mt-3 max-w-md text-black">Tell us your dates and we will reply with available rooms.</p>
       <NuxtLink
         to="/contact"
         class="mt-8 inline-block rounded-full bg-white px-8 py-3.5 text-sm font-medium text-neutral-900 transition-opacity hover:opacity-90"
