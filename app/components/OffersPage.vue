@@ -3,123 +3,121 @@ useHead({
   title: 'Special Offers | Samlot Diamond Resort'
 })
 
-const offers = [
-  {
-    title: 'Romantic Escape',
-    image: '/picture/4.jpg',
-    price: '$299',
-    description:
-      'Perfect for couples with romantic room decoration, dinner and spa experience.'
-  },
-  {
-    title: 'Family Adventure',
-    image: '/picture/5.jpg',
-    price: '$399',
-    description:
-      'Spacious accommodation, activities and dining for the entire family.'
-  },
-  {
-    title: 'Weekend Retreat',
-    image: '/picture/3.jpg',
-    price: '$199',
-    description:
-      'A relaxing weekend surrounded by mountains and nature.'
+interface SpecialOffer {
+  id: number
+  title: string
+  badge: string
+  description: string
+  discount_text: string
+  valid_until: string | null
+  image: string
+  is_active: boolean
+}
+
+const { getOffers, getHeroByPage } = useApi()
+
+const { data: hero } = await useAsyncData('hero-offers', async () => {
+  try {
+    return await getHeroByPage('offers')
+  } catch {
+    return null
   }
-]
+})
+
+const { data: offers, pending } = await useAsyncData<SpecialOffer[]>(
+  'public-offers',
+  async () => {
+    const res: any = await getOffers()
+    return Array.isArray(res) ? res : (res?.results || [])
+  },
+  { default: () => [] }
+)
 </script>
 
 <template>
-  <div>
-    <section class="relative h-[60vh] overflow-hidden">
+  <div class="min-h-screen bg-[#FDFBF7] text-neutral-900">
+    <!-- Hero -->
+    <section class="relative h-[70vh] overflow-hidden bg-neutral-950">
       <img
-        src="/picture/43.jpg"
-        alt="Special Offers"
-        class="absolute inset-0 h-full w-full object-cover"
+        :src="hero?.background_image || '/picture/38.jpg'"
+        :alt="hero?.title || 'Special Offers'"
+        class="absolute inset-0 h-full w-full object-cover opacity-80"
       >
+      <div class="absolute inset-0 bg-black/50" />
 
-      <div class="absolute inset-0 bg-black/50"></div>
-
-      <div class="relative flex h-full items-center justify-center text-center text-white">
-        <div>
-          <p class="mb-4 font-['Cinzel'] uppercase tracking-[6px] text-[#D4AF37]">
-            Exclusive
+      <div class="relative flex h-full items-center justify-center px-6 text-center text-white">
+        <div class="max-w-3xl">
+          <p class="mb-4 text-xs uppercase tracking-[6px] text-[#D4AF37]">
+            {{ hero?.eyebrow || 'Exclusive Packages' }}
           </p>
-
           <h1 class="font-['Cinzel'] text-5xl md:text-7xl">
-            Special Offers
+            {{ hero?.title || 'Special Offers' }}
           </h1>
-
-          <p class="mx-auto mt-5 max-w-2xl text-white/80">
-            Discover exclusive packages designed for unforgettable stays.
+          <p class="mx-auto mt-5 max-w-xl text-sm text-white/80 md:text-base">
+            {{ hero?.description || 'Enjoy curated seasonal packages and exclusive direct-booking privileges at Samlot Diamond Resort.' }}
           </p>
         </div>
       </div>
     </section>
 
-    <section class="bg-[#F8F7F4] py-24">
-      <div class="mx-auto max-w-7xl px-6">
+    <!-- Offers List -->
+    <section class="mx-auto max-w-7xl px-6 py-24">
+      <div v-if="pending" class="grid gap-8 md:grid-cols-2">
+        <div v-for="n in 4" :key="n" class="h-96 animate-pulse rounded-3xl bg-neutral-200" />
+      </div>
 
-        <div class="grid gap-10 lg:grid-cols-3">
-
-          <article
-            v-for="offer in offers"
-            :key="offer.title"
-            class="overflow-hidden rounded-3xl bg-white shadow-lg transition hover:-translate-y-2 hover:shadow-xl"
-          >
+      <div v-else-if="offers.length" class="grid gap-10 md:grid-cols-2">
+        <article
+          v-for="offer in offers"
+          :key="offer.id"
+          class="flex flex-col overflow-hidden rounded-3xl border border-neutral-200 bg-white shadow-lg transition hover:-translate-y-1 hover:shadow-xl"
+        >
+          <div class="relative h-64 w-full bg-neutral-100">
             <img
               :src="offer.image"
               :alt="offer.title"
-              class="h-[320px] w-full object-cover"
+              class="h-full w-full object-cover"
             >
+            <span
+              v-if="offer.badge"
+              class="absolute left-5 top-5 rounded-full bg-[#1D3527] px-4 py-1.5 text-xs font-semibold uppercase tracking-wider text-[#D4AF37]"
+            >
+              {{ offer.badge }}
+            </span>
+            <span
+              v-if="offer.discount_text"
+              class="absolute bottom-4 right-4 rounded-xl bg-[#D4AF37] px-4 py-2 text-sm font-bold text-black shadow"
+            >
+              {{ offer.discount_text }}
+            </span>
+          </div>
 
-            <div class="p-6">
+          <div class="flex flex-1 flex-col p-8">
+            <h2 class="font-['Cinzel'] text-2xl font-semibold text-[#1D3527]">
+              {{ offer.title }}
+            </h2>
 
-              <div class="mb-3 text-[#D4AF37] font-semibold">
-                From {{ offer.price }}
-              </div>
+            <p class="mt-4 flex-1 text-sm leading-relaxed text-neutral-600">
+              {{ offer.description }}
+            </p>
 
-              <h2 class="mb-4 font-['Cinzel'] text-2xl">
-                {{ offer.title }}
-              </h2>
-
-              <p class="mb-6 text-neutral-600">
-                {{ offer.description }}
+            <div class="mt-8 flex flex-wrap items-center justify-between gap-4 border-t border-neutral-100 pt-6">
+              <p v-if="offer.valid_until" class="text-xs font-medium text-neutral-500">
+                Valid until: <span class="text-neutral-800">{{ offer.valid_until }}</span>
               </p>
-
               <NuxtLink
                 to="/booking"
-                class="inline-flex rounded-full bg-[#1D3527] px-6 py-3 text-white transition hover:bg-[#294b36]"
+                class="ml-auto inline-flex rounded-full bg-[#1D3527] px-6 py-2.5 text-xs font-semibold uppercase tracking-widest text-white transition hover:bg-[#2b4e38]"
               >
-                Book Offer
+                Claim Offer →
               </NuxtLink>
-
             </div>
-
-          </article>
-
-        </div>
-
+          </div>
+        </article>
       </div>
-    </section>
 
-    <section class="bg-white py-24">
-      <div class="mx-auto max-w-4xl px-6 text-center">
-
-        <h2 class="font-['Cinzel'] text-4xl md:text-5xl">
-          Need A Custom Package?
-        </h2>
-
-        <p class="mt-6 text-neutral-600">
-          Contact our team and we can create a personalized experience for your stay.
-        </p>
-
-        <NuxtLink
-          to="/contact"
-          class="mt-8 inline-flex rounded-full bg-[#1D3527] px-8 py-4 text-white transition hover:bg-[#294b36]"
-        >
-          Contact Us
-        </NuxtLink>
-
+      <div v-else class="py-16 text-center text-neutral-500">
+        New seasonal offers will be announced soon.
       </div>
     </section>
   </div>

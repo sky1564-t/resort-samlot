@@ -1,10 +1,18 @@
 <script setup lang="ts">
 import { useHead } from '#imports'
 
-// import { useBooking } from '~/composables/useBooking'
-
 useHead({
   title: 'Book Your Stay | Samlot Diamond Resort'
+})
+
+const { getHeroByPage } = useApi()
+
+const { data: hero } = await useAsyncData('hero-booking', async () => {
+  try {
+    return await getHeroByPage('booking')
+  } catch {
+    return null
+  }
 })
 
 const {
@@ -22,18 +30,20 @@ const {
   submit
 } = useBooking()
 
-const inputClass = "w-full rounded-xl sm:rounded-2xl bg-black/20 border border-white/10 p-3 sm:p-4 text-sm sm:text-base text-white outline-none transition-all placeholder:text-white/40 focus:border-white/30 focus:bg-black/40 focus:ring-1 focus:ring-white/30 backdrop-blur-md"
-const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white/80 ml-1 sm:ml-2"
+const inputClass =
+  'w-full rounded-xl sm:rounded-2xl bg-black/20 border border-white/10 p-3 sm:p-4 text-sm sm:text-base text-white outline-none transition-all placeholder:text-white/40 focus:border-white/30 focus:bg-black/40 focus:ring-1 focus:ring-white/30 backdrop-blur-md'
+const labelClass =
+  'mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white/80 ml-1 sm:ml-2'
 </script>
 
 <template>
   <div class="relative min-h-screen bg-neutral-950 font-sans selection:bg-white/30 text-white">
-    
-    <!-- Fixed Background Image -->
+
+    <!-- Fixed Background Image (Controlled from Hero Dashboard) -->
     <div class="fixed inset-0 z-0">
       <img
-        src="/picture/43.jpg"
-        alt="Background"
+        :src="hero?.background_image || '/picture/43.jpg'"
+        :alt="hero?.title || 'Background'"
         class="h-full w-full object-cover"
       >
       <div class="absolute inset-0 bg-neutral-900/60 mix-blend-multiply" />
@@ -42,29 +52,58 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
 
     <!-- Main Content -->
     <div class="relative z-10 mx-auto flex min-h-screen max-w-7xl flex-col px-4 pb-12 sm:px-6 md:pb-16 lg:px-8 lg:pb-20">
-      
+
       <!-- HERO -->
       <header class="mb-12 pt-[100px] text-center sm:mb-16 lg:mb-20 lg:pt-[140px]">
         <p class="mb-2 sm:mb-3 text-[10px] sm:text-xs uppercase tracking-[0.3em] sm:tracking-[0.4em] text-white/60">
-          Reservation
+          {{ hero?.eyebrow || 'Reservation' }}
         </p>
         <h1 class="font-serif text-4xl text-white sm:text-5xl md:text-6xl lg:text-7xl">
-          Book Your Stay
+          {{ hero?.title || 'Book Your Stay' }}
         </h1>
       </header>
-      
+
       <!-- SUCCESS -->
       <div
         v-if="status === 'sent'"
-        class="rounded-[28px] md:rounded-[32px] xl:rounded-[36px] border border-white/20 bg-white/90 p-8 md:p-12 backdrop-blur-xl shadow-[0_30px_100px_rgba(0,0,0,0.12)]"
+        class="mx-auto w-full max-w-2xl rounded-[28px] md:rounded-[32px] xl:rounded-[36px] border border-white/20 bg-white/95 p-8 md:p-12 text-center text-neutral-900 backdrop-blur-xl shadow-[0_30px_100px_rgba(0,0,0,0.12)]"
       >
-        <!-- your existing success content -->
+        <p class="text-xs font-semibold uppercase tracking-[0.25em] text-[#4e733c]">
+          Reservation Confirmed
+        </p>
+        <h2 class="mt-3 font-serif text-3xl md:text-4xl text-neutral-900">
+          Thank You, {{ form.firstName }}
+        </h2>
+        <p class="mt-4 text-sm text-neutral-600">
+          Your booking request has been received. Please save your reservation code below.
+        </p>
+
+        <div class="my-8 rounded-2xl bg-neutral-100 p-6">
+          <p class="text-xs uppercase tracking-widest text-neutral-500">Booking Code</p>
+          <p class="mt-2 font-mono text-2xl font-bold text-[#1D3527]">
+            {{ bookingCode }}
+          </p>
+          <p class="mt-3 text-sm text-neutral-600">
+            {{ form.room }} • {{ form.checkIn }} → {{ form.checkOut }} ({{ nights }} night{{ nights > 1 ? 's' : '' }})
+          </p>
+          <p class="mt-1 text-lg font-bold text-[#D4AF37]">
+            Total: ${{ total }}
+          </p>
+        </div>
+
+        <button
+          type="button"
+          class="rounded-xl sm:rounded-2xl bg-[#1D3527] px-8 py-4 text-sm sm:text-base font-semibold text-white transition-all hover:bg-[#2b4e38]"
+          @click="reset"
+        >
+          Make Another Reservation
+        </button>
       </div>
 
       <!-- LOADING -->
       <div
         v-else-if="status === 'sending'"
-        class="rounded-3xl sm:rounded-[2.5rem] bg-white/10 p-5 sm:p-8 md:p-10 shadow-2xl backdrop-blur-2xl border border-white/10 text-center"
+        class="mx-auto w-full max-w-xl rounded-3xl sm:rounded-[2.5rem] bg-white/10 p-5 sm:p-8 md:p-10 shadow-2xl backdrop-blur-2xl border border-white/10 text-center"
       >
         <h2 class="font-serif text-xl sm:text-2xl md:text-3xl">
           Processing Reservation
@@ -77,7 +116,7 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
       <!-- ERROR -->
       <div
         v-else-if="status === 'error'"
-        class="rounded-3xl sm:rounded-[2.5rem] bg-white/10 p-5 sm:p-8 md:p-10 shadow-2xl backdrop-blur-2xl border border-red-500/20 text-center"
+        class="mx-auto w-full max-w-xl rounded-3xl sm:rounded-[2.5rem] bg-white/10 p-5 sm:p-8 md:p-10 shadow-2xl backdrop-blur-2xl border border-red-500/20 text-center"
       >
         <h2 class="font-serif text-xl sm:text-2xl md:text-3xl">
           Reservation Failed
@@ -94,8 +133,12 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
         </button>
       </div>
 
-      <div class="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_400px] lg:gap-10 xl:gap-12 lg:items-start">
-  
+      <!-- BOOKING FORM + SIDEBAR -->
+      <div
+        v-else
+        class="grid gap-6 sm:gap-8 lg:grid-cols-[1fr_340px] xl:grid-cols-[1fr_400px] lg:gap-10 xl:gap-12 lg:items-start"
+      >
+
         <!-- Form -->
         <form
           class="rounded-3xl sm:rounded-[2.5rem] bg-white/10 p-5 sm:p-8 md:p-10 shadow-2xl backdrop-blur-2xl border border-white/10"
@@ -111,48 +154,50 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
             <div class="col-span-1 sm:col-span-2">
               <label :class="labelClass">Room</label>
               <select v-model="form.room" :class="inputClass">
-                <option value="" disabled class="bg-neutral-900 text-white ">Select a room...</option>
+                <option value="" disabled class="bg-neutral-900 text-white">Select a room...</option>
                 <option v-for="room in rooms" :key="room.id" :value="room.name" class="bg-neutral-900 text-white">
-                  {{ room.name }}
+                  {{ room.name }} — ${{ Number(room.price_per_night) }}/night
                 </option>
               </select>
               <p v-if="errors.room" class="mt-1 sm:mt-2 ml-1 text-xs sm:text-sm text-red-400">{{ errors.room }}</p>
+              <p v-else-if="available === true" class="mt-2 ml-1 text-xs text-emerald-300">
+                Available for your selected dates.
+              </p>
+              <p v-else-if="available === false" class="mt-2 ml-1 text-xs text-red-400">
+                Not available for your selected dates.
+              </p>
             </div>
 
-            <!-- Native HTML Check In Datepicker -->
+            <!-- Check In -->
             <div class="col-span-1">
               <label :class="labelClass">Check In</label>
               <div class="relative group cursor-pointer">
-                <!-- Custom Gold Hover Icon -->
                 <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-white/40 transition-colors duration-300 group-hover:text-[#D4AF37]">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <!-- Native Input Field (Forces light popup) -->
-                <input 
+                <input
                   v-model="form.checkIn"
-                  type="date" 
+                  type="date"
                   class="native-date-input w-full cursor-pointer rounded-xl sm:rounded-2xl bg-black/20 border border-white/10 py-3 sm:py-4 pl-12 pr-4 text-sm sm:text-base text-white outline-none transition-all focus:border-white/30 focus:bg-black/40 focus:ring-1 focus:ring-white/30 backdrop-blur-md group-hover:bg-black/30 [color-scheme:light]"
                 >
               </div>
               <p v-if="errors.checkIn" class="mt-1 sm:mt-2 ml-1 text-xs sm:text-sm text-red-400">{{ errors.checkIn }}</p>
             </div>
 
-            <!-- Native HTML Check Out Datepicker -->
+            <!-- Check Out -->
             <div class="col-span-1">
               <label :class="labelClass">Check Out</label>
               <div class="relative group cursor-pointer">
-                <!-- Custom Gold Hover Icon -->
                 <div class="absolute inset-y-0 left-0 flex items-center pl-4 pointer-events-none text-white/40 transition-colors duration-300 group-hover:text-[#D4AF37]">
                   <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                 </div>
-                <!-- Native Input Field (Forces light popup) -->
-                <input 
+                <input
                   v-model="form.checkOut"
-                  type="date" 
+                  type="date"
                   class="native-date-input w-full cursor-pointer rounded-xl sm:rounded-2xl bg-black/20 border border-white/10 py-3 sm:py-4 pl-12 pr-4 text-sm sm:text-base text-white outline-none transition-all focus:border-white/30 focus:bg-black/40 focus:ring-1 focus:ring-white/30 backdrop-blur-md group-hover:bg-black/30 [color-scheme:light]"
                 >
               </div>
@@ -175,12 +220,14 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
             <div class="col-span-1">
               <label :class="labelClass">First Name</label>
               <input v-model="form.firstName" type="text" placeholder="John" :class="inputClass">
+              <p v-if="errors.firstName" class="mt-1 sm:mt-2 ml-1 text-xs sm:text-sm text-red-400">{{ errors.firstName }}</p>
             </div>
 
             <!-- Last Name -->
             <div class="col-span-1">
               <label :class="labelClass">Last Name</label>
               <input v-model="form.lastName" type="text" placeholder="Doe" :class="inputClass">
+              <p v-if="errors.lastName" class="mt-1 sm:mt-2 ml-1 text-xs sm:text-sm text-red-400">{{ errors.lastName }}</p>
             </div>
 
             <!-- Email -->
@@ -193,6 +240,7 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
             <div class="col-span-1">
               <label :class="labelClass">Phone</label>
               <input v-model="form.phone" type="text" placeholder="+855" :class="inputClass">
+              <p v-if="errors.phone" class="mt-1 sm:mt-2 ml-1 text-xs sm:text-sm text-red-400">{{ errors.phone }}</p>
             </div>
 
             <!-- Nationality -->
@@ -216,10 +264,10 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
           <div class="mt-6 sm:mt-8 flex justify-end">
             <button
               type="submit"
-              :disabled="status === 'sending'"
+              :disabled="available === false"
               class="w-full sm:w-auto rounded-xl sm:rounded-2xl bg-[#D4AF37] px-6 py-3 sm:px-8 sm:py-4 text-sm sm:text-base font-semibold text-black transition-all hover:bg-[#c89c2b] active:scale-[0.98] disabled:opacity-50"
             >
-              {{ status === 'sending' ? 'Submitting...' : 'Confirm Booking' }}
+              Confirm Booking
             </button>
           </div>
         </form>
@@ -266,7 +314,6 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
 </template>
 
 <style scoped>
-/* Hides the default browser calendar icon but stretches its clickable area over the entire input */
 .native-date-input::-webkit-calendar-picker-indicator {
   position: absolute;
   top: 0;
@@ -277,7 +324,6 @@ const labelClass = "mb-1 sm:mb-2 block text-xs sm:text-sm font-medium text-white
   cursor: pointer;
 }
 
-/* Ensures the date text is properly aligned next to our custom SVG icon */
 .native-date-input::-webkit-datetime-edit {
   padding-left: 0.25rem;
 }

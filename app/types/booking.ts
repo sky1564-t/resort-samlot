@@ -1,59 +1,37 @@
-export interface GuestPayload {
+// app/types/booking.ts
+export interface BookingPayload {
+  accommodation_type_id?: number
+  room?: string
+  check_in: string
+  check_out: string
+  adults: number
+  children: number
   first_name: string
   last_name: string
   email: string
   phone: string
   nationality?: string
+  notes?: string
 }
 
-export interface BookingPayload {
-  room_id: number
-  check_in: string
-  check_out: string
-  adults: number
-  children: number
-  guest: GuestPayload
-}
-
-export interface AvailabilityPayload {
-  accommodation_type_id: number
-  check_in: string
-  check_out: string
-}
-
-export interface RoomOption {
+export interface Booking {
   id: number
-  name: string
-  price_per_night: number
-  capacity: number
-}
-
-export interface BookingForm {
-  room: string
-  roomId: number | null
-
-  checkIn: string
-  checkOut: string
-
+  booking_code: string
+  room_name?: string
+  accommodation_type_name?: string
+  guest_name?: string
+  first_name?: string
+  last_name?: string
+  email?: string
+  phone?: string
+  nationality?: string
+  check_in: string
+  check_out: string
+  nights?: number
   adults: number
   children: number
-
-  firstName: string
-  lastName: string
-
-  email: string
-  phone: string
-  nationality: string
-
-  notes: string
-}
-
-export interface BookingErrors {
-  room: string
-  checkIn: string
-  checkOut: string
-  adults: string
-  firstName: string
-  lastName: string
-  email: string
+  total_amount: number | string
+  status: 'pending' | 'confirmed' | 'checked_in' | 'checked_out' | 'cancelled'
+  notes?: string
+  created_at?: string
 }

@@ -1,5 +1,4 @@
 
-
 <template>
   <main>
     <HomeHeroSection />
@@ -7,7 +6,7 @@
     <HomeLatestBlogs />
     <HomeFarmPage />
     <HomeResortView />
-     <HomeGalleryPreview />
+     <HomeOurFood/>
 
   </main>
 </template>

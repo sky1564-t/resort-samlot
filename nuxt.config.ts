@@ -10,16 +10,17 @@ export default defineNuxtConfig({
     enabled: true
   },
 
+
   runtimeConfig: {
     public: {
-      apiBase:
-        'http://127.0.0.1:8000/api/v1'
-    }
+      apiBase: process.env.NUXT_PUBLIC_API_BASE || 'http://127.0.0.1:8000/api',
+    },
   },
 
   postcss: {
     plugins: {
-      autoprefixer: {}
+      autoprefixer: {},
+      tailwindcss: {},
     }
   },
 

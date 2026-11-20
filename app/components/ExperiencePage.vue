@@ -12,7 +12,7 @@ const experiences = [
   },
   {
     title: 'Swimming Pool',
-    image: '/picture/21.jpg',
+    image: '/picture/p1.jpg',
     description:
       'Relax beside the pool while enjoying mountain views.'
   },
@@ -68,7 +68,7 @@ const experiences = [
     </section>
 
     <section class="bg-[#F8F7F4] py-24">
-      <div class="mx-auto max-w-7xl px-6">
+      <div class="mx-auto max-w-7xl ">
 
         <div class="mb-16 text-center">
           <h2 class="font-['Cinzel'] text-4xl md:text-5xl">

@@ -1,29 +1,26 @@
-export interface Amenity {
-  id: number
-  name: string
-  icon: string
-}
-
+// app/types/room.ts
 export interface RoomImage {
   id: number
-  accommodation: number
   image: string
-  is_featured: boolean
-  created_at: string
+  caption: string
+  order: number
 }
 
 export interface Room {
   id: number
   name: string
   slug: string
-  category: string
   description: string
-  max_guests: number
-  base_price: number
+  price_per_night: number | string
+  total_rooms: number
+  max_adults: number
+  max_children: number
+  size_sqm: number | null
+  bed_type: string
+  amenities: string[]
+  cover_image: string | null
+  images?: RoomImage[]
   is_active: boolean
-}
-
-export interface RoomDetail extends Room {
-  amenities: Amenity[]
-  images: RoomImage[]
+  created_at?: string
+  updated_at?: string
 }
